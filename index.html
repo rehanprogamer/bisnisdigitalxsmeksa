@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Bisnis Digital SMEKSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0F1E; --surface:#101A30; --surface2:#16223D; --line:rgba(255,255,255,.08);
+    --text:#EAF0FF; --muted:#8B96B3; --teal:#00E6A8; --coral:#FF6B4A; --teal-dim:rgba(0,230,168,.14);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:#050810; color:var(--text); font-family:'Inter',sans-serif; line-height:1.6;
+  }
+  h1,h2,h3,h4{font-family:'Sora',sans-serif;}
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block; object-fit:cover; width:100%;}
+  svg{flex-shrink:0;}
+  ::selection{background:var(--teal); color:#04140F;}
+
+  /* PHONE FRAME - selalu tampil seperti aplikasi HP, tidak melebar seperti web desktop */
+  .app{
+    max-width:460px; margin:0 auto; background:var(--bg); min-height:100vh;
+    position:relative; padding-bottom:76px;
+  }
+
+  /* TOP BAR */
+  .topbar{
+    position:sticky; top:0; z-index:50; background:rgba(10,15,30,.92); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line); padding:14px 18px; display:flex; align-items:center; gap:10px;
+  }
+  .topbar .dot{width:9px; height:9px; border-radius:50%; background:var(--teal); box-shadow:0 0 10px var(--teal); flex-shrink:0;}
+  .topbar b{font-family:'Sora',sans-serif; font-size:.95rem; font-weight:700; display:block;}
+  .topbar span{color:var(--muted); font-size:.68rem;}
+
+  section{padding:26px 18px;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; color:var(--teal); font-weight:600;
+    font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px;
+  }
+  .eyebrow::before{content:''; width:18px; height:1px; background:var(--teal);}
+
+  /* HOME */
+  .hero-photo{border-radius:16px; overflow:hidden; border:1px solid var(--line); aspect-ratio:4/3; margin-bottom:20px;}
+  .hero h1{font-size:1.7rem; font-weight:800; line-height:1.18; letter-spacing:-.01em; margin-bottom:12px;}
+  .hero h1 em{font-style:normal; color:var(--teal);}
+  .hero p.lead{color:var(--muted); font-size:.92rem; margin-bottom:20px;}
+  .btn-row{display:flex; flex-direction:column; gap:10px;}
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:8px; padding:14px 20px;
+    border-radius:12px; font-weight:600; font-size:.9rem; border:1px solid transparent;
+  }
+  .btn-primary{background:var(--teal); color:#04140F;}
+  .btn-ghost{border-color:var(--line); color:var(--text);}
+
+  .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:22px;}
+  .stat{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px;}
+  .stat b{font-family:'Sora',sans-serif; font-size:1.4rem; display:block; color:var(--teal);}
+  .stat span{color:var(--muted); font-size:.72rem;}
+
+  .intro-card{margin-top:24px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px;}
+  .intro-card .tag{
+    background:var(--teal-dim); color:var(--teal); font-weight:700; font-size:.68rem;
+    padding:5px 11px; border-radius:20px; display:inline-block; margin-bottom:12px;
+  }
+  .intro-card p{color:var(--muted); font-size:.87rem;}
+
+  .sec-head{margin-bottom:20px;}
+  .sec-head h2{font-size:1.4rem; font-weight:800;}
+  .sec-head p{color:var(--muted); margin-top:6px; font-size:.85rem;}
+
+  /* MATERI */
+  .modul{background:var(--surface); border:1px solid var(--line); border-radius:14px; margin-bottom:14px; overflow:hidden;}
+  .modul-head{display:flex; align-items:center; gap:12px; padding:16px 18px; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+  .modul-num{
+    font-family:'Sora',sans-serif; font-weight:800; font-size:.85rem; color:var(--teal);
+    background:var(--teal-dim); width:36px; height:36px; border-radius:9px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .modul-head h3{font-size:.92rem; font-weight:700; flex:1;}
+  .modul-head .chev{color:var(--muted); transition:transform .25s; flex-shrink:0; font-size:.8rem;}
+  .modul.open .chev{transform:rotate(180deg); color:var(--teal);}
+  .modul-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .modul.open .modul-body{max-height:3000px;}
+  .modul-body-inner{padding:0 18px 20px;}
+  .modul-photo{width:100%; aspect-ratio:16/10; border-radius:10px; overflow:hidden; margin-bottom:14px; border:1px solid var(--line);}
+  .modul-intro{color:var(--muted); font-size:.85rem; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--line);}
+  .topic{padding:14px 0; border-top:1px solid var(--line);}
+  .topic:first-child{border-top:none; padding-top:0;}
+  .topic b{display:block; font-size:.88rem; margin-bottom:6px;}
+  .topic p{color:var(--muted); font-size:.82rem;}
+
+  /* PROSPEK KERJA */
+  .job-card{background:var(--surface); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:14px;}
+  .job-photo{width:100%; aspect-ratio:16/9;}
+  .job-body{padding:16px 18px;}
+  .job-card h4{font-size:.92rem; margin-bottom:6px;}
+  .job-card p{color:var(--muted); font-size:.82rem;}
+
+  /* TENTANG */
+  .profile-card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px;}
+  .avatar{width:58px; height:58px; border-radius:12px; overflow:hidden; margin-bottom:12px; border:1px solid var(--line);}
+  .profile-card h3{font-size:1.02rem; margin-bottom:2px;}
+  .profile-card .role{color:var(--teal); font-size:.78rem; font-weight:600; margin-bottom:12px;}
+  .profile-card p.bio{color:var(--muted); font-size:.83rem; margin-bottom:14px;}
+  .profile-card ul{list-style:none;}
+  .profile-card li{display:flex; justify-content:space-between; padding:9px 0; border-top:1px solid var(--line); font-size:.8rem; gap:10px;}
+  .profile-card li span:first-child{color:var(--muted);}
+  .profile-card li span:last-child{font-weight:600; text-align:right;}
+
+  .contact-card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px;}
+  .contact-card h3{font-size:.98rem; margin-bottom:6px;}
+  .contact-card p{color:var(--muted); font-size:.82rem;}
+  .contact-links{display:flex; flex-direction:column; gap:9px; margin-top:14px;}
+  .contact-links a{
+    display:flex; align-items:center; gap:11px; padding:13px 14px; background:var(--surface2);
+    border:1px solid var(--line); border-radius:11px; font-size:.83rem; font-weight:600;
+  }
+  .contact-links .em{
+    width:30px; height:30px; border-radius:8px; background:var(--teal-dim);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--teal);
+  }
+
+  footer{padding:22px 18px 10px; text-align:center;}
+  footer p{color:var(--muted); font-size:.72rem; margin-bottom:3px;}
+
+  /* BOTTOM TAB BAR - khas aplikasi mobile */
+  .tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:60;
+    max-width:460px; margin:0 auto;
+    background:rgba(16,26,48,.95); backdrop-filter:blur(12px);
+    border-top:1px solid var(--line); display:flex;
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  }
+  .tab{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:6px 2px; border-radius:10px; color:var(--muted); font-size:.64rem; font-weight:600;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tab svg{width:20px; height:20px;}
+  .tab.active{color:var(--teal);}
+
+  /* KALKULATOR BISNIS */
+  .calc-card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px;}
+  .calc-field{margin-bottom:18px;}
+  .calc-field label{display:block; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; font-weight:600;}
+  .calc-field .calc-input-row{display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--line); border-radius:11px; padding:12px 14px;}
+  .calc-field .calc-input-row span{color:var(--muted); font-size:.9rem; font-weight:600; flex-shrink:0;}
+  .calc-field input{flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--text); font-family:'Sora',sans-serif; font-size:1.05rem; font-weight:700;}
+  .calc-field input::placeholder{color:#4A5678;}
+  .calc-result{margin-top:20px; padding-top:18px; border-top:1px dashed var(--line);}
+  .calc-row{display:flex; justify-content:space-between; align-items:center; padding:8px 0; font-size:.85rem; color:var(--muted);}
+  .calc-row .v{font-family:'Sora',sans-serif; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums;}
+  .calc-row.grand{margin-top:6px; padding-top:14px; border-top:1px solid var(--line);}
+  .calc-row.grand span:first-child{color:var(--text); font-weight:700; font-size:.92rem;}
+  .calc-row.grand .v{color:var(--teal); font-size:1.3rem;}
+  .calc-status{margin-top:14px; font-size:.72rem; color:var(--muted); text-align:center; min-height:16px;}
+  .calc-status.err{color:var(--coral);}
+  .calc-badge{display:inline-flex; align-items:center; gap:6px; background:var(--teal-dim); color:var(--teal); font-size:.68rem; font-weight:700; padding:5px 10px; border-radius:20px; margin-top:14px;}
+  .calc-badge .dot2{width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 8px var(--teal);}
+
+  /* MODE SWITCHER */
+  .calc-modes{display:flex; gap:6px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:4px; margin-bottom:16px;}
+  .calc-mode-btn{flex:1; text-align:center; padding:9px 4px; border-radius:9px; border:none; background:transparent; color:var(--muted); font-family:'Inter',sans-serif; font-size:.76rem; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+  .calc-mode-btn.active{background:var(--teal); color:#04140F;}
+  .calc-panel{display:none;}
+  .calc-panel.active{display:block;}
+
+  /* BIAYA OPERASIONAL TOGGLE */
+  .calc-extra-toggle{display:flex; align-items:center; justify-content:space-between; padding:2px 0 16px;}
+  .calc-extra-toggle span{color:var(--muted); font-size:.78rem; font-weight:600;}
+  .switch{position:relative; width:40px; height:23px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .switch .track{position:absolute; inset:0; background:var(--surface2); border:1px solid var(--line); border-radius:20px; transition:.2s;}
+  .switch .track::before{content:''; position:absolute; width:15px; height:15px; left:3px; top:3px; background:var(--muted); border-radius:50%; transition:.2s;}
+  .switch input:checked + .track{background:var(--teal-dim); border-color:var(--teal);}
+  .switch input:checked + .track::before{transform:translateX(17px); background:var(--teal);}
+  .calc-extra-field{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .calc-extra-field.open{max-height:120px;}
+
+  /* TOMBOL BAGIKAN */
+  .calc-share-btn{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:16px; padding:13px; border-radius:11px; background:var(--surface2); border:1px solid var(--line); color:var(--text); font-family:'Inter',sans-serif; font-weight:600; font-size:.85rem; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:.2s;}
+  .calc-share-btn svg{width:16px; height:16px; flex-shrink:0;}
+  .calc-share-btn.copied{background:var(--teal-dim); border-color:var(--teal); color:var(--teal);}
+  .calc-share-btn.copied svg{animation:pop .35s ease;}
+  @keyframes pop{0%{transform:scale(1);} 40%{transform:scale(1.3);} 100%{transform:scale(1);}}
+
+  /* STEMPEL LUNAS */
+  .calc-result{position:relative;}
+  .stempel-lunas{
+    position:absolute; top:-6px; right:6px;
+    color:var(--coral); border:2px solid var(--coral); border-radius:6px;
+    padding:3px 10px; font-family:'Sora',sans-serif; font-weight:700; font-size:.62rem;
+    letter-spacing:.1em; text-transform:uppercase;
+    opacity:0; transform:scale(2.2) rotate(-18deg);
+    pointer-events:none;
+  }
+  .stempel-lunas.show{ animation:stempelJatuh .5s cubic-bezier(.2,1.4,.4,1) forwards; }
+  @keyframes stempelJatuh{
+    0%{ opacity:0; transform:scale(2.2) rotate(-18deg); }
+    60%{ opacity:.9; transform:scale(.85) rotate(-10deg); }
+    80%{ transform:scale(1.05) rotate(-13deg); }
+    100%{ opacity:.9; transform:scale(1) rotate(-12deg); }
+  }
+
+  /* ANGKA BERJALAN (count-up) */
+  .calc-row .v.counting{ color:var(--teal); }
+
+  /* RIWAYAT PERHITUNGAN */
+  .riwayat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .riwayat-head h3{font-size:.85rem; font-weight:700;}
+  .riwayat-clear{color:var(--coral); font-size:.72rem; font-weight:600; background:none; border:none; padding:4px 0; cursor:pointer;}
+  .riwayat-empty{color:var(--muted); font-size:.8rem; text-align:center; padding:18px 0;}
+  .riwayat-item{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:12px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:11px; margin-bottom:9px;}
+  .riwayat-item .ri-left{min-width:0;}
+  .riwayat-item .ri-time{color:var(--muted); font-size:.68rem; margin-bottom:3px;}
+  .riwayat-item .ri-detail{font-size:.78rem; color:var(--text);}
+  .riwayat-item .ri-right{font-family:'Sora',sans-serif; font-weight:700; color:var(--teal); font-size:.9rem; text-align:right; flex-shrink:0;}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <span class="dot"></span>
+    <div><b>BISNIS DIGITAL</b><span>SMKN 1 Kota Serang</span></div>
+  </div>
+
+  <!-- HOME -->
+  <section id="home" class="hero">
+    <div class="hero-photo">
+      <img src="https://images.unsplash.com/photo-1758272423130-5bbccae36b11?w=700&h=525&fit=crop&auto=format&q=70" alt="Belajar bisnis digital dan e-commerce">
+    </div>
+    <div class="eyebrow">Kelas X &middot; Tahun Ajaran Aktif</div>
+    <h1>Belajar membangun <em>bisnis di dunia digital</em>, dari nol sampai jualan online.</h1>
+    <p class="lead">Selamat datang di ruang belajar Jurusan Bisnis Digital SMKN 1 Kota Serang (SMEKSA). Di sini kamu belajar cara pasar bekerja, cara e-commerce dan logistik digital berjalan, sampai bagaimana jadi konten kreator atau punya usaha rintisan sendiri.</p>
+    <div class="btn-row">
+      <a href="#materi" class="btn btn-primary">Lihat Materi Belajar</a>
+      <a href="#prospek" class="btn btn-ghost">Lihat Prospek Kerja</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>4</b><span>Modul Materi</span></div>
+      <div class="stat"><b>11</b><span>Sub Topik</span></div>
+      <div class="stat"><b>7+</b><span>Profesi Digital</span></div>
+      <div class="stat"><b>100%</b><span>Praktik Digital</span></div>
+    </div>
+    <div class="intro-card">
+      <span class="tag">APA ITU?</span>
+      <p><b style="color:var(--text)">Bisnis Digital</b> adalah jurusan yang mempelajari cara merancang, menjalankan, dan mengembangkan usaha dengan memanfaatkan teknologi &mdash; mulai dari pemasaran, e-commerce, logistik, sampai konten digital. Siswa dibekali kemampuan berpikir kreatif, memahami tren pasar, serta menguasai alat-alat digital yang dipakai pelaku usaha masa kini, agar siap kerja maupun berwirausaha setelah lulus dari SMEKSA.</p>
+    </div>
+  </section>
+
+  <!-- MATERI BELAJAR -->
+  <section id="materi">
+    <div class="sec-head">
+      <div class="eyebrow">Kurikulum Kelas 10</div>
+      <h2>Materi Belajar</h2>
+      <p>Empat modul utama kelas 10, ditulis sebagai artikel. Ketuk judul untuk membuka isinya.</p>
+    </div>
+
+    <div class="modul open">
+      <div class="modul-head">
+        <div class="modul-num">01</div>
+        <h3>Proses Bisnis di Bidang Pemasaran</h3>
+        <span class="chev">&#9662;</span>
+      </div>
+      <div class="modul-body">
+        <div class="modul-body-inner">
+          <div class="modul-photo"><img src="https://images.unsplash.com/photo-1686061592689-312bbfb5c055?w=640&h=400&fit=crop&auto=format&q=70" alt="Analisis pasar dan proses bisnis" loading="lazy"></div>
+          <p class="modul-intro">Modul ini membahas fondasi paling dasar dari sebuah usaha: bagaimana bisnis bekerja, siapa yang dilayani, dan bagaimana barang berpindah dari produsen sampai ke pembeli.</p>
+          <div class="topic">
+            <b>Konsep Dasar Bisnis</b>
+            <p>Bisnis secara sederhana adalah kegiatan menghasilkan barang atau jasa untuk memenuhi kebutuhan orang lain, dengan tujuan mendapatkan keuntungan. Namun bisnis yang bertahan lama tidak hanya soal untung, melainkan soal nilai yang diberikan kepada konsumen. Sebelum memulai usaha, pelaku bisnis perlu melakukan analisis pasar &mdash; mengenali siapa target pembeli, apa yang mereka butuhkan, berapa banyak pesaing yang sudah ada, dan berapa harga yang wajar. Dari analisis inilah perusahaan bisa menentukan cara menciptakan nilai, misalnya lewat kualitas produk yang lebih baik, harga yang lebih terjangkau, atau pengalaman berbelanja yang lebih nyaman.</p>
+          </div>
+          <div class="topic">
+            <b>Mata Rantai Pasok (Supply Chain)</b>
+            <p>Sebelum sebuah produk sampai ke tangan pembeli, ia melewati banyak tahapan yang disebut rantai pasok. Prosesnya dimulai dari produsen atau pabrik yang membuat barang, lalu dikirim ke distributor dalam jumlah besar, kemudian diteruskan ke pengecer atau toko, sebelum akhirnya dibeli konsumen akhir. Di era digital, rantai pasok ini menjadi lebih pendek dan cepat karena produsen bisa langsung menjual ke konsumen lewat marketplace, tanpa harus melalui banyak perantara, sehingga harga produk bisa lebih bersaing di pasar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modul">
+      <div class="modul-head">
+        <div class="modul-num">02</div>
+        <h3>Perkembangan Teknologi dan Isu Global</h3>
+        <span class="chev">&#9662;</span>
+      </div>
+      <div class="modul-body">
+        <div class="modul-body-inner">
+          <div class="modul-photo"><img src="https://images.unsplash.com/photo-1758272423130-5bbccae36b11?w=640&h=400&fit=crop&auto=format&q=70" alt="Belanja online dan teknologi e-commerce" loading="lazy"></div>
+          <p class="modul-intro">Modul ini menjelaskan bagaimana teknologi mengubah dunia usaha, dari toko fisik menjadi ekosistem digital yang menghubungkan penjual, pembeli, dan jasa pengiriman.</p>
+          <div class="topic">
+            <b>Transformasi Bisnis</b>
+            <p>Dulu hampir semua transaksi jual beli terjadi secara tatap muka di pasar atau toko. Kini, pergeseran besar terjadi menuju ekosistem digital: penjual membuka toko online, pembeli berbelanja dari rumah lewat aplikasi, dan pembayaran dilakukan tanpa uang tunai. Transformasi ini juga menciptakan jenis usaha baru yang dulu tidak ada, seperti jasa titip online, dropshipping, dan reseller digital, yang membuat siapa saja bisa mulai berjualan tanpa modal besar.</p>
+          </div>
+          <div class="topic">
+            <b>Teknologi E-Commerce</b>
+            <p>E-commerce adalah sistem jual beli yang dilakukan sepenuhnya melalui platform digital, seperti Tokopedia, Shopee, atau Lazada. Di platform ini, penjual bisa memajang produk lengkap dengan foto, deskripsi, dan harga, sementara pembeli bisa membandingkan banyak toko sekaligus hanya dengan menggeser layar ponsel. E-commerce juga didukung sistem pembayaran nontunai atau e-wallet seperti GoPay, OVO, dan DANA, yang membuat transaksi lebih cepat dan aman tanpa perlu membawa uang fisik.</p>
+          </div>
+          <div class="topic">
+            <b>Layanan Pengiriman (Logistik Digital)</b>
+            <p>Tidak ada e-commerce tanpa logistik yang baik. Setelah pembayaran selesai, barang harus sampai dengan aman dan tepat waktu &mdash; di sinilah peran aplikasi transportasi dan jasa ekspedisi. Layanan seperti Gojek dan Grab menyediakan pengantaran instan dalam kota, sementara ekspedisi seperti JNE, SiCepat, atau J&amp;T menangani pengiriman antarkota dengan sistem pelacakan digital yang bisa dipantau langsung oleh pembeli.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modul">
+      <div class="modul-head">
+        <div class="modul-num">03</div>
+        <h3>Profil Pengusaha &amp; Peluang Kerja</h3>
+        <span class="chev">&#9662;</span>
+      </div>
+      <div class="modul-body">
+        <div class="modul-body-inner">
+          <div class="modul-photo"><img src="https://images.unsplash.com/photo-1690378820474-b468b8ee64d3?w=640&h=400&fit=crop&auto=format&q=70" alt="Tim startup dan wirausaha muda" loading="lazy"></div>
+          <p class="modul-intro">Modul ini mengenalkan siswa pada dunia kerja dan wirausaha digital, sekaligus membentuk pola pikir yang dibutuhkan untuk sukses di industri yang cepat berubah.</p>
+          <div class="topic">
+            <b>Profesi Bisnis Digital</b>
+            <p>Industri digital membuka banyak peluang karier yang bahkan belum ada sepuluh tahun lalu. Lulusan Bisnis Digital bisa bekerja sebagai Social Media Specialist yang mengelola akun media sosial sebuah brand, Content Creator yang membuat video dan foto promosi, SEO Specialist yang membantu website mudah ditemukan di mesin pencari, atau bahkan menjadi pemilik startup sendiri dengan ide usaha yang orisinal.</p>
+          </div>
+          <div class="topic">
+            <b>Sikap Wirausaha</b>
+            <p>Menjadi wirausahawan digital yang sukses bukan hanya soal punya modal, tetapi soal mentalitas. Seorang wirausahawan perlu terbiasa berpikir kreatif untuk menemukan solusi baru, berani mencoba hal yang belum pasti hasilnya, dan mampu bangkit ketika usaha mengalami kegagalan. Kemampuan membaca tren digital terkini juga menjadi kunci penting, misalnya mengenali produk apa yang sedang dicari orang atau platform baru apa yang mulai digemari anak muda.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modul">
+      <div class="modul-head">
+        <div class="modul-num">04</div>
+        <h3>Digital Marketing &amp; Literasi Digital</h3>
+        <span class="chev">&#9662;</span>
+      </div>
+      <div class="modul-body">
+        <div class="modul-body-inner">
+          <div class="modul-photo"><img src="https://images.unsplash.com/photo-1745848413060-0827ec268cda?w=640&h=400&fit=crop&auto=format&q=70" alt="Digital marketing dan keamanan data" loading="lazy"></div>
+          <p class="modul-intro">Modul ini menggabungkan dua kemampuan penting: mempromosikan produk lewat konten menarik, dan menjaga diri dari risiko yang mengintai di dunia online.</p>
+          <div class="topic">
+            <b>Konten Digital</b>
+            <p>Promosi yang baik dimulai dari tulisan dan visual yang mampu menarik perhatian calon pembeli dalam hitungan detik. Copywriting adalah keterampilan menulis teks promosi yang persuasif, singkat, dan mudah dipahami. Promosi di media sosial juga membutuhkan visual yang konsisten, jadwal unggahan yang teratur, dan interaksi aktif dengan pengikut lewat kolom komentar atau pesan langsung.</p>
+          </div>
+          <div class="topic">
+            <b>Keamanan Digital</b>
+            <p>Semakin banyak aktivitas dilakukan secara online, semakin penting menjaga keamanan data pribadi. Modul ini mengajarkan cara melindungi kata sandi dan data pembayaran, mengenali ciri-ciri penipuan online seperti tautan mencurigakan, serta pentingnya menjaga rekam jejak digital yang bersih karena bisa memengaruhi reputasi seseorang di masa depan, termasuk saat melamar pekerjaan.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROSPEK KERJA -->
+  <section id="prospek">
+    <div class="sec-head">
+      <div class="eyebrow">Setelah Lulus</div>
+      <h2>Prospek Kerja</h2>
+      <p>Lulusan Bisnis Digital punya banyak jalan karier di industri digital, atau membangun usaha sendiri.</p>
+    </div>
+
+    <div class="job-card">
+      <div class="job-photo"><img src="https://images.unsplash.com/photo-1686061592689-312bbfb5c055?w=500&h=280&fit=crop&auto=format&q=70" alt="Social Media Specialist" loading="lazy"></div>
+      <div class="job-body">
+        <h4>Social Media Specialist</h4>
+        <p>Mengelola akun media sosial sebuah brand, menyusun jadwal unggahan, membalas komentar pelanggan, serta menganalisis konten yang paling banyak disukai audiens.</p>
+      </div>
+    </div>
+    <div class="job-card">
+      <div class="job-photo"><img src="https://images.unsplash.com/photo-1745848413060-0827ec268cda?w=500&h=280&fit=crop&auto=format&q=70" alt="Content Creator" loading="lazy"></div>
+      <div class="job-body">
+        <h4>Content Creator</h4>
+        <p>Membuat konten foto, video, dan tulisan untuk promosi produk atau personal branding, mulai dari ide, syuting, editing, sampai mengunggah ke media sosial.</p>
+      </div>
+    </div>
+    <div class="job-card">
+      <div class="job-photo"><img src="https://images.unsplash.com/photo-1686061592689-312bbfb5c055?w=500&h=280&fit=crop&auto=format&q=70&sat=-20" alt="SEO Specialist" loading="lazy"></div>
+      <div class="job-body">
+        <h4>SEO Specialist</h4>
+        <p>Mengoptimalkan struktur dan isi website agar mudah ditemukan di halaman pertama Google, lewat riset kata kunci dan penulisan artikel yang relevan.</p>
+      </div>
+    </div>
+    <div class="job-card">
+      <div class="job-photo"><img src="https://images.unsplash.com/photo-1690378820474-b468b8ee64d3?w=500&h=280&fit=crop&auto=format&q=70" alt="Founder Startup" loading="lazy"></div>
+      <div class="job-body">
+        <h4>Founder Startup</h4>
+        <p>Merintis usaha berbasis teknologi dari ide sendiri, mulai dari riset masalah, merancang solusi digital, mencari modal, sampai membangun tim.</p>
+      </div>
+    </div>
+    <div class="job-card">
+      <div class="job-photo"><img src="https://images.unsplash.com/photo-1758272423130-5bbccae36b11?w=500&h=280&fit=crop&auto=format&q=70" alt="Admin E-Commerce" loading="lazy"></div>
+      <div class="job-body">
+        <h4>Admin E-Commerce</h4>
+        <p>Mengelola toko online di marketplace, mengunggah produk, memproses pesanan, mengatur stok, dan melayani pertanyaan pelanggan.</p>
+      </div>
+    </div>
+    <div class="job-card">
+      <div class="job-photo"><img src="https://images.unsplash.com/photo-1686061592689-312bbfb5c055?w=500&h=280&fit=crop&auto=format&q=70" alt="Digital Marketing Staff" loading="lazy"></div>
+      <div class="job-body">
+        <h4>Digital Marketing Staff</h4>
+        <p>Menjalankan strategi promosi digital, mulai dari iklan berbayar di media sosial hingga menganalisis performa setiap kampanye pemasaran.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- KALKULATOR BISNIS -->
+  <section id="kalkulator">
+    <div class="sec-head">
+      <div class="eyebrow">Praktik Langsung</div>
+      <h2>Kalkulator Bisnis</h2>
+      <p>Hitung harga jual atau simulasi diskon, dibantu server Flask.</p>
+    </div>
+
+    <div class="calc-modes">
+      <button class="calc-mode-btn active" id="mode-btn-untung" data-mode="untung">Harga Jual</button>
+      <button class="calc-mode-btn" id="mode-btn-diskon" data-mode="diskon">Diskon</button>
+    </div>
+
+    <!-- MODE: HARGA JUAL -->
+    <div class="calc-card calc-panel active" id="panel-untung">
+      <div class="calc-field">
+        <label for="calc-modal">Modal</label>
+        <div class="calc-input-row">
+          <span>Rp</span>
+          <input type="number" id="calc-modal" placeholder="100000" inputmode="numeric" min="0">
+        </div>
+      </div>
+
+      <div class="calc-extra-toggle">
+        <span>Tambah biaya operasional</span>
+        <label class="switch">
+          <input type="checkbox" id="calc-extra-check">
+          <span class="track"></span>
+        </label>
+      </div>
+      <div class="calc-extra-field" id="calc-extra-field">
+        <div class="calc-field">
+          <label for="calc-biaya">Biaya Operasional</label>
+          <div class="calc-input-row">
+            <span>Rp</span>
+            <input type="number" id="calc-biaya" placeholder="0" inputmode="numeric" min="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-field">
+        <label for="calc-untung">Target Untung</label>
+        <div class="calc-input-row">
+          <input type="number" id="calc-untung" placeholder="20" inputmode="numeric" min="0">
+          <span>%</span>
+        </div>
+      </div>
+
+      <div class="calc-result">
+        <div class="stempel-lunas" id="stempel-untung">Lunas</div>
+        <div class="calc-row"><span>Total Modal</span><span class="v" id="calc-out-modal">Rp 0</span></div>
+        <div class="calc-row"><span>Jumlah Untung</span><span class="v" id="calc-out-untung">Rp 0</span></div>
+        <div class="calc-row grand"><span>Harga Jual</span><span class="v" id="calc-out-total">Rp 0</span></div>
+      </div>
+
+      <div class="calc-badge" id="calc-badge" style="display:none;">
+        <span class="dot2"></span> Dihitung oleh server
+      </div>
+      <div class="calc-status" id="calc-status"></div>
+
+      <button class="calc-share-btn" id="calc-share-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>
+        <span id="calc-share-text">Bagikan Hasil</span>
+      </button>
+    </div>
+
+    <!-- MODE: DISKON -->
+    <div class="calc-card calc-panel" id="panel-diskon">
+      <div class="calc-field">
+        <label for="diskon-harga">Harga Awal</label>
+        <div class="calc-input-row">
+          <span>Rp</span>
+          <input type="number" id="diskon-harga" placeholder="150000" inputmode="numeric" min="0">
+        </div>
+      </div>
+      <div class="calc-field">
+        <label for="diskon-persen">Besar Diskon</label>
+        <div class="calc-input-row">
+          <input type="number" id="diskon-persen" placeholder="15" inputmode="numeric" min="0" max="100">
+          <span>%</span>
+        </div>
+      </div>
+
+      <div class="calc-result">
+        <div class="stempel-lunas" id="stempel-diskon">Hemat</div>
+        <div class="calc-row"><span>Potongan Harga</span><span class="v" id="diskon-out-potongan">Rp 0</span></div>
+        <div class="calc-row grand"><span>Harga Setelah Diskon</span><span class="v" id="diskon-out-total">Rp 0</span></div>
+      </div>
+
+      <button class="calc-share-btn" id="diskon-share-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>
+        <span id="diskon-share-text">Bagikan Hasil</span>
+      </button>
+    </div>
+
+    <div class="calc-card">
+      <div class="riwayat-head">
+        <h3>Riwayat Perhitungan</h3>
+        <button class="riwayat-clear" id="riwayat-clear">Hapus</button>
+      </div>
+      <div id="riwayat-list">
+        <div class="riwayat-empty" id="riwayat-empty">Belum ada perhitungan tersimpan.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TENTANG KAMI / KONTAK -->
+  <section id="tentang">
+    <div class="sec-head">
+      <div class="eyebrow">Profil &amp; Kontak</div>
+      <h2>Tentang Kami</h2>
+      <p>Website ini dibuat siswa Bisnis Digital SMEKSA sebagai media belajar mandiri.</p>
+    </div>
+
+    <div class="profile-card">
+      <div class="avatar"><img src="profile.jpg" alt="Foto profil siswa"></div>
+      <h3>M. Rayhan A.</h3>
+      <div class="role">Siswa Kelas X Bisnis Digital</div>
+      <p class="bio">Tertarik pada pemasaran digital dan e-commerce, saat ini belajar membangun toko online sederhana sebagai proyek praktik jurusan.</p>
+      <ul>
+        <li><span>Sekolah</span><span>SMKN 1 Kota Serang</span></li>
+        <li><span>Jurusan</span><span>Bisnis Digital</span></li>
+        <li><span>Kelas</span><span>X Bisnis Digital</span></li>
+        <li><span>Minat</span><span>Digital Marketing</span></li>
+      </ul>
+    </div>
+
+    <div class="contact-card">
+      <h3>Hubungi Saya</h3>
+      <p>Ada pertanyaan soal materi atau mau kolaborasi? Silakan hubungi lewat kontak di bawah ini.</p>
+      <div class="contact-links">
+        <a href="mailto:isoajsjsjaaijshaja@gmail.com">
+          <span class="em"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></span>
+          isoajsjsjaaijshaja@gmail.com
+        </a>
+        <a href="https://wa.me/6287726357426" target="_blank" rel="noopener">
+          <span class="em"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          WhatsApp &mdash; +62 877-2635-7426
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; Bisnis Digital SMEKSA</p>
+    <p>Jurusan Bisnis Digital, SMKN 1 Kota Serang</p>
+  </footer>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav class="tabbar" id="tabbar">
+    <a href="#home" class="tab active" data-id="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      Home
+    </a>
+    <a href="#materi" class="tab" data-id="materi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Materi
+    </a>
+    <a href="#prospek" class="tab" data-id="prospek">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      Prospek
+    </a>
+    <a href="#kalkulator" class="tab" data-id="kalkulator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+      Kalkulator
+    </a>
+    <a href="#tentang" class="tab" data-id="tentang">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      Kontak
+    </a>
+  </nav>
+
+</div>
+
+<script>
+  var sections = document.querySelectorAll('section[id]');
+  var tabs = document.querySelectorAll('.tab');
+  function setActive(){
+    var current = sections[0].id;
+    var y = window.scrollY + 120;
+    sections.forEach(function(sec){ if(y >= sec.offsetTop) current = sec.id; });
+    tabs.forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-id') === current); });
+  }
+  window.addEventListener('scroll', setActive, {passive:true});
+  setActive();
+
+  document.querySelectorAll('.modul-head').forEach(function(head){
+    head.addEventListener('click', function(){
+      var modul = head.parentElement;
+      var wasOpen = modul.classList.contains('open');
+      document.querySelectorAll('.modul').forEach(function(m){ m.classList.remove('open'); });
+      if(!wasOpen) modul.classList.add('open');
+    });
+  });
+
+  // KALKULATOR BISNIS
+  (function(){
+    var API_URL = "https://rehanprogamer233.pythonanywhere.com/hitung";
+    var modalInput = document.getElementById('calc-modal');
+    var untungInput = document.getElementById('calc-untung');
+    var biayaCheck = document.getElementById('calc-extra-check');
+    var biayaField = document.getElementById('calc-extra-field');
+    var biayaInput = document.getElementById('calc-biaya');
+    var outModal = document.getElementById('calc-out-modal');
+    var outUntung = document.getElementById('calc-out-untung');
+    var outTotal = document.getElementById('calc-out-total');
+    var badge = document.getElementById('calc-badge');
+    var status = document.getElementById('calc-status');
+    var shareBtn = document.getElementById('calc-share-btn');
+    var shareText = document.getElementById('calc-share-text');
+    var timer = null;
+    var lastResult = null;
+
+    var RIWAYAT_KEY = 'riwayat_kalkulator_bisnis';
+    var riwayatList = document.getElementById('riwayat-list');
+    var riwayatEmpty = document.getElementById('riwayat-empty');
+    var riwayatClearBtn = document.getElementById('riwayat-clear');
+
+    function formatRupiah(n){
+      return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+    }
+
+    // ==== ANGKA BERJALAN (count-up) ====
+    var countState = {};
+    function countUp(el, targetValue){
+      var key = el.id;
+      var startValue = countState[key] || 0;
+      countState[key] = targetValue;
+      var startTime = null;
+      var duration = 500;
+      el.classList.add('counting');
+      function step(ts){
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = startValue + (targetValue - startValue) * eased;
+        el.textContent = formatRupiah(current);
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          el.textContent = formatRupiah(targetValue);
+          el.classList.remove('counting');
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ==== TRIGGER STEMPEL ====
+    function tampilkanStempel(el){
+      el.classList.remove('show');
+      void el.offsetWidth; // reset animasi
+      el.classList.add('show');
+    }
+
+    // ==== MODE SWITCHER ====
+    var modeBtns = document.querySelectorAll('.calc-mode-btn');
+    var panels = document.querySelectorAll('.calc-panel');
+    modeBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        modeBtns.forEach(function(b){ b.classList.remove('active'); });
+        panels.forEach(function(p){ p.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.mode).classList.add('active');
+      });
+    });
+
+    // ==== TOGGLE BIAYA OPERASIONAL ====
+    biayaCheck.addEventListener('change', function(){
+      biayaField.classList.toggle('open', biayaCheck.checked);
+      if (!biayaCheck.checked) biayaInput.value = '';
+      hitung();
+    });
+    biayaInput.addEventListener('input', hitung);
+
+    // ==== RIWAYAT ====
+    function getRiwayat(){
+      try { return JSON.parse(localStorage.getItem(RIWAYAT_KEY)) || []; }
+      catch(e){ return []; }
+    }
+    function saveRiwayat(list){ localStorage.setItem(RIWAYAT_KEY, JSON.stringify(list)); }
+
+    function renderRiwayat(){
+      var list = getRiwayat();
+      riwayatList.querySelectorAll('.riwayat-item').forEach(function(el){ el.remove(); });
+      if (list.length === 0){ riwayatEmpty.style.display = 'block'; return; }
+      riwayatEmpty.style.display = 'none';
+      list.forEach(function(item){
+        var div = document.createElement('div');
+        div.className = 'riwayat-item';
+        div.innerHTML =
+          '<div class="ri-left">' +
+            '<div class="ri-time">' + item.waktu + '</div>' +
+            '<div class="ri-detail">' + item.label + '</div>' +
+          '</div>' +
+          '<div class="ri-right">' + formatRupiah(item.hasil) + '</div>';
+        riwayatList.appendChild(div);
+      });
+    }
+
+    function tambahRiwayat(label, hasil){
+      var list = getRiwayat();
+      var waktu = new Date().toLocaleString('id-ID', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+      list.unshift({ waktu: waktu, label: label, hasil: hasil });
+      list = list.slice(0, 6);
+      saveRiwayat(list);
+      renderRiwayat();
+    }
+
+    riwayatClearBtn.addEventListener('click', function(){
+      saveRiwayat([]);
+      renderRiwayat();
+    });
+    renderRiwayat();
+
+    // ==== MODE HARGA JUAL (server) ====
+    function hitung(){
+      var modalPokok = parseFloat(modalInput.value);
+      var biaya = biayaCheck.checked ? (parseFloat(biayaInput.value) || 0) : 0;
+      var untung = parseFloat(untungInput.value);
+
+      if (isNaN(modalPokok) || isNaN(untung)) {
+        badge.style.display = 'none';
+        status.textContent = '';
+        lastResult = null;
+        return;
+      }
+      var totalModal = modalPokok + biaya;
+      outModal.textContent = formatRupiah(totalModal);
+
+      clearTimeout(timer);
+      status.classList.remove('err');
+      status.textContent = 'Menghitung...';
+      timer = setTimeout(function(){
+        fetch(API_URL, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({modal: totalModal, target_untung: untung})
+        })
+        .then(function(res){ return res.json().then(function(data){ return {ok: res.ok, data: data}; }); })
+        .then(function(result){
+          if (!result.ok) throw new Error(result.data.error || 'Terjadi kesalahan');
+          countUp(outUntung, result.data.jumlah_untung);
+          countUp(outTotal, result.data.harga_jual);
+          tampilkanStempel(document.getElementById('stempel-untung'));
+          badge.style.display = 'inline-flex';
+          status.textContent = '';
+          lastResult = {
+            teks: 'Modal: ' + formatRupiah(totalModal) + '\nUntung (' + untung + '%): ' + formatRupiah(result.data.jumlah_untung) + '\nHarga Jual: ' + formatRupiah(result.data.harga_jual)
+          };
+          tambahRiwayat('Modal ' + formatRupiah(totalModal) + ' · Untung ' + untung + '%', result.data.harga_jual);
+        })
+        .catch(function(err){
+          badge.style.display = 'none';
+          status.classList.add('err');
+          status.textContent = err.message || 'Gagal terhubung ke server';
+          lastResult = null;
+        });
+      }, 400);
+    }
+    modalInput.addEventListener('input', hitung);
+    untungInput.addEventListener('input', hitung);
+
+    // ==== MODE DISKON (client-side) ====
+    var diskonHarga = document.getElementById('diskon-harga');
+    var diskonPersen = document.getElementById('diskon-persen');
+    var diskonOutPotongan = document.getElementById('diskon-out-potongan');
+    var diskonOutTotal = document.getElementById('diskon-out-total');
+    var diskonShareBtn = document.getElementById('diskon-share-btn');
+    var diskonShareText = document.getElementById('diskon-share-text');
+    var lastDiskonResult = null;
+
+    function hitungDiskon(){
+      var harga = parseFloat(diskonHarga.value);
+      var persen = parseFloat(diskonPersen.value);
+      if (isNaN(harga) || isNaN(persen)) { lastDiskonResult = null; return; }
+      var potongan = harga * (persen / 100);
+      var hargaAkhir = harga - potongan;
+      countUp(diskonOutPotongan, potongan);
+      countUp(diskonOutTotal, hargaAkhir);
+      tampilkanStempel(document.getElementById('stempel-diskon'));
+      lastDiskonResult = {
+        teks: 'Harga Awal: ' + formatRupiah(harga) + '\nDiskon: ' + persen + '% (' + formatRupiah(potongan) + ')\nHarga Akhir: ' + formatRupiah(hargaAkhir)
+      };
+      tambahRiwayat('Diskon ' + persen + '% dari ' + formatRupiah(harga), hargaAkhir);
+    }
+    diskonHarga.addEventListener('input', hitungDiskon);
+    diskonPersen.addEventListener('input', hitungDiskon);
+
+    // ==== TOMBOL BAGIKAN (share / copy) ====
+    function pasangBagikan(btn, textEl, getResult){
+      btn.addEventListener('click', function(){
+        var result = getResult();
+        if (!result) return;
+        var teks = 'Kalkulator Bisnis SMEKSA\n' + result.teks;
+
+        if (navigator.share) {
+          navigator.share({ text: teks }).catch(function(){});
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(teks).then(function(){
+            btn.classList.add('copied');
+            textEl.textContent = 'Tersalin!';
+            setTimeout(function(){
+              btn.classList.remove('copied');
+              textEl.textContent = 'Bagikan Hasil';
+            }, 1800);
+          });
+        }
+      });
+    }
+    pasangBagikan(shareBtn, shareText, function(){ return lastResult; });
+    pasangBagikan(diskonShareBtn, diskonShareText, function(){ return lastDiskonResult; });
+  })();
+</script>
+</body>
+</html>
